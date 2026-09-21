@@ -1,44 +1,42 @@
 #!/bin/bash
 
-# Update system and install core packages
-sudo apt update
-sudo apt install -y fontconfig openjdk-17-jre 
+# 1. Update system and install core packages (Added -y to openjdk installation)
+sudo apt-get update -y
+sudo apt-get install -y fontconfig openjdk-17-jre wget apt-transport-https gnupg lsb-release snapd
 
-# Jenkins installation
+# 2. Jenkins installation
 sudo wget -O /usr/share/keyrings/jenkins-keyring.asc \
   https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
 echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc]" \
   https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
   /etc/apt/sources.list.d/jenkins.list > /dev/null
-sudo apt-get update
+
+sudo apt-get update -y
 sudo apt-get -y install jenkins
 
 sudo systemctl start jenkins
 sudo systemctl enable jenkins
 
-# Docker installation
-sudo apt-get update
+# 3. Docker installation
 sudo apt-get install docker.io -y
 
-# User group permission
+# User group permissions (Allows Jenkins and the current user to run Docker commands)
 sudo usermod -aG docker $USER
 sudo usermod -aG docker jenkins
 
 sudo systemctl restart docker
 sudo systemctl restart jenkins
 
-# Install dependencies and Trivy
-sudo apt-get install wget apt-transport-https gnupg lsb-release snapd -y
-wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+# 4. Trivy installation (UPDATED to fix apt-key deprecation)
+wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
+echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+
 sudo apt-get update -y
 sudo apt-get install trivy -y
 
-# AWS CLI installation
+# 5. Snap installations for AWS CLI, Helm, and Kubectl
 sudo snap install aws-cli --classic
-
-# Helm installation
 sudo snap install helm --classic
-
-# Kubectl installation
 sudo snap install kubectl --classic
+
+echo "Installation complete!"

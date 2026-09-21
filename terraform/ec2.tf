@@ -13,7 +13,7 @@ data "aws_ami" "os_image" {
 
 resource "aws_key_pair" "deployer" {
   key_name   = "terra-automate-key"
-  public_key = file("terra-key.pub")
+  public_key = file("/home/rushi/.ssh/id_ed25519.pub")
 }
 
 resource "aws_default_vpc" "default" {
@@ -70,7 +70,7 @@ resource "aws_security_group" "allow_user_to_connect" {
 }
 
 resource "aws_instance" "testinstance" {
-  ami             = data.aws_ami.os_image.id
+  ami             = var.ami_id
   instance_type   = var.instance_type 
   key_name        = aws_key_pair.deployer.key_name
   security_groups = [aws_security_group.allow_user_to_connect.name]
