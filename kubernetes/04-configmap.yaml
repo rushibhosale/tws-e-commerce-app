@@ -8,5 +8,5 @@ data:
   NODE_ENV: "production"
   NEXT_PUBLIC_API_URL: "https://easyshop.letsdeployit.com/api"
   NEXTAUTH_URL: "https://easyshop.letsdeployit.com/"
-  NEXTAUTH_SECRET: "HmaFjYZ2jbUK7Ef+wZrBiJei4ZNGBAJ5IdiOGAyQegw="
-  JWT_SECRET: "e5e425764a34a2117ec2028bd53d6f1388e7b90aeae9fa7735f2469ea3a6cc8c"
+  NEXTAUTH_SECRET: "fd1fxzmdzdtMIEkWPee6aLiZ1PcIMHwpvdlBYIjLlkU="
+  JWT_SECRET: "a8551a0ff27cd9aa9f7646ff6970f6f56033f19e43fa3582a6bb64f3c16acc75"
