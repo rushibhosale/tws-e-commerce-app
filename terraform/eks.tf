@@ -6,6 +6,11 @@ module "eks" {
   name                   = local.name
   kubernetes_version = "1.34"
   endpoint_public_access = true
+  # FIX: Allow nodes to talk to the control plane internally
+  endpoint_private_access = true
+
+  # ADD THIS 1 LINE: Automatically grants admin access to the IAM user running Terraform
+  enable_cluster_creator_admin_permissions = true
 
   addons = {
     coredns = {
@@ -13,9 +18,11 @@ module "eks" {
     }
     kube-proxy = {
       most_recent = true
+      before_compute = true
     }
     vpc-cni = {
       most_recent = true
+      before_compute = true
     }
   }
 
@@ -45,10 +52,25 @@ module "eks" {
 
       instance_types = ["t2.large"]
       attach_cluster_primary_security_group = true
-      capacity_type  = "SPOT"
+      capacity_type  = "ON_DEMAND"
 
-      disk_size = 35 
-      use_custom_launch_template = false  # Important to apply disk size!
+      disk_size = 35
+
+      # FIX: Explicitly force the Launch Template to give nodes public IPs
+      network_interfaces = [
+        {
+          associate_public_ip_address = true
+        }
+      ]
+
+      # ADD THIS FIX: Allows Kubernetes pods to reach the AWS Metadata server
+      metadata_options = {
+        http_endpoint               = "enabled"
+        http_tokens                 = "required"
+        http_put_response_hop_limit = 2
+      }
+
+      # use_custom_launch_template = false  # Important to apply disk size!
 
       tags = {
         Name = "tws-demo-ng"

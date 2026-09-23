@@ -28,6 +28,20 @@ pipeline {
                 }
             }
         }
+
+        stage('Prevent Infinite Loop') {
+            steps {
+                script {
+                    // Fetch the full commit message of the latest commit
+                    def commitMsg = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
+                    
+                    if (commitMsg.contains('[ci skip]')) {
+                        currentBuild.result = 'ABORTED'
+                        error("Stopping build: Detected [ci skip] in commit message.")
+                    }
+                }
+            }
+        }
         
         stage('Build Docker Images') {
             parallel {

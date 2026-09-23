@@ -10,7 +10,7 @@ module "vpc" {
   private_subnets = local.private_subnets
   intra_subnets   = local.intra_subnets
 
-  enable_nat_gateway = true
+  # enable_nat_gateway = true
 
   public_subnet_tags = {
     "kubernetes.io/role/elb" = 1
